@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar with Events</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body.dark-mode {
+        background-color: #121212;
+        color: white;
+      }
+      .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 20px;
+      }
+      .day {
+        padding: 20px;
+        border: 1px solid #ddd;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 6px;
+        position: relative;
+      }
+      .day:hover {
+        background-color: #f0f0f0;
+      }
+      body.dark-mode .day {
+        border: 1px solid #444;
+      }
+      body.dark-mode .day:hover {
+        background-color: #333;
+      }
+      .event {
+        font-size: 12px;
+        margin-top: 5px;
+        padding: 2px 4px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 4px;
+      }
+      /* Highlight hari ini */
+      .today {
+        background-color: #198754 !important;
+        color: white;
+        font-weight: bold;
+      }
+      body.dark-mode .today {
+        background-color: #2ecc71 !important;
+        color: black;
+      }
+      /* Efek timbul halus */
+      .calendar-card {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      /* Efek hover biar lebih interaktif */
+      .calendar-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+      }
+      .dark-mode .calendar-card {
+        background-color: #1e1e2f;
+        color: white;
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+      }
+
+      .dark-mode .calendar-card:hover {
+        box-shadow: 0 12px 25px rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Navigasi Bulan -->
+        <button id="prevBtn" class="btn btn-outline-primary">
+          ⟨ Sebelumnya
+        </button>
+        <h2 id="monthYear" class="mb-0 text-primary"></h2>
+        <button id="nextBtn" class="btn btn-outline-primary">
+          Berikutnya ⟩
+        </button>
+      </div>
+
+      <!-- Tombol Dark Mode -->
+      <button id="darkModeBtn" class="dark-toggle">
+        <span class="icon">🌙</span>
+      </button>
+
+      <!-- Calendar -->
+      <div class="calendar" id="calendar"></div>
+
+      <!-- Events List -->
+      <div class="mt-4 text-primary text-center">
+        <h4>Events</h4>
+        <ul id="eventList" class="list-group"></ul>
+      </div>
+    </div>
+
+    <!-- Modal Form Event -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add/Edit Event</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="eventForm">
+              <input type="hidden" id="eventDate" />
+              <div class="mb-3">
+                <label class="form-label">Event Title</label>
+                <input
+                  type="text"
+                  id="eventTitle"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Save Event</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const calendarEl = document.getElementById("calendar");
+      const monthYearEl = document.getElementById("monthYear");
+      const eventListEl = document.getElementById("eventList");
+      const eventForm = document.getElementById("eventForm");
+      const eventModal = new bootstrap.Modal(
+        document.getElementById("eventModal"),
+      );
+
+      // Load events from localStorage
+      let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
+
+      const today = new Date();
+      let currentMonth = today.getMonth();
+      let currentYear = today.getFullYear();
+
+      function saveEvents() {
+        localStorage.setItem("calendarEvents", JSON.stringify(events));
+      }
+
+      function renderCalendar() {
+        calendarEl.innerHTML = "";
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(
+          currentYear,
+          currentMonth + 1,
+          0,
+        ).getDate();
+        monthYearEl.textContent =
+          new Date(currentYear, currentMonth).toLocaleString("default", {
+            month: "long",
+          }) +
+          " " +
+          currentYear;
+
+        for (let i = 0; i < firstDay; i++) {
+          calendarEl.innerHTML += `<div></div>`;
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const fullDate = `${currentYear}-${currentMonth + 1}-${day}`;
+          const dayEl = document.createElement("div");
+          dayEl.className = "day";
+          dayEl.textContent = day;
+
+          // Highlight today
+          if (
+            day === today.getDate() &&
+            currentMonth === today.getMonth() &&
+            currentYear === today.getFullYear()
+          ) {
+            dayEl.classList.add("today");
+          }
+
+          if (events[fullDate]) {
+            events[fullDate].forEach((ev) => {
+              const evEl = document.createElement("div");
+              evEl.className = "event";
+              evEl.textContent = ev;
+              dayEl.appendChild(evEl);
+            });
+          }
+
+          dayEl.addEventListener("click", () => openEventForm(fullDate));
+          calendarEl.appendChild(dayEl);
+        }
+        renderEventList();
+      }
+
+      function openEventForm(date) {
+        document.getElementById("eventDate").value = date;
+        document.getElementById("eventTitle").value = "";
+        eventModal.show();
+      }
+
+      eventForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const date = document.getElementById("eventDate").value;
+        const title = document.getElementById("eventTitle").value;
+        if (!events[date]) events[date] = [];
+        events[date].push(title);
+        saveEvents();
+        eventModal.hide();
+        renderCalendar();
+      });
+
+      function renderEventList() {
+        eventListEl.innerHTML = "";
+        for (const date in events) {
+          events[date].forEach((ev) => {
+            const li = document.createElement("li");
+            li.className =
+              "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${date}: ${ev} 
+            <button class="btn btn-sm btn-danger">Delete</button>`;
+            li.querySelector("button").addEventListener("click", () => {
+              events[date] = events[date].filter((e) => e !== ev);
+              if (events[date].length === 0) delete events[date];
+              saveEvents();
+              renderCalendar();
+            });
+            eventListEl.appendChild(li);
+          });
+        }
+      }
+      const darkModeBtn = document.getElementById("darkModeBtn");
+      darkModeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        // Ganti ikon
+        darkModeBtn.innerHTML = document.body.classList.contains("dark-mode")
+          ? "<span class='icon'>☀️</span>"
+          : "<span class='icon'>🌙</span>";
+      });
+
+      // Navigasi Bulan
+      document.getElementById("prevBtn").addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+        renderCalendar();
+      });
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+        renderCalendar();
+      });
+
+      renderCalendar();
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 text-center">
+      <p class="mb-0 text-primary">2025 Projects by <strong>Mulyana</strong></p>
+    </footer>
+  </body>
+</html>

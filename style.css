@@ -1,0 +1,156 @@
+/* Global */
+body {
+	background: #f8f9fa;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	transition:
+		background 0.3s ease,
+		color 0.3s ease;
+}
+body.dark-mode {
+	background: #121212;
+	color: #f1f1f1;
+}
+
+/* Calendar Card */
+.calendar {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 10px;
+	margin-top: 20px;
+}
+.day {
+	padding: 20px 10px;
+	border-radius: 12px;
+	background: white;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+	transition: all 0.2s ease;
+}
+.day:hover {
+	background: #e9f5ff;
+	transform: translateY(-3px);
+	box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode day */
+body.dark-mode .day {
+	background: #1e1e2f;
+	border: 1px solid #333;
+}
+body.dark-mode .day:hover {
+	background: #2a2a3d;
+	box-shadow: 0 5px 15px rgba(255, 255, 255, 0.08);
+}
+
+/* Event badge */
+.event {
+	font-size: 12px;
+	margin-top: 6px;
+	padding: 3px 6px;
+	background: linear-gradient(45deg, #0d6efd, #0aa1ff);
+	color: white;
+	border-radius: 6px;
+	box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+	display: inline-block;
+}
+
+/* Highlight hari ini */
+.today {
+	background: linear-gradient(135deg, #198754, #20c997);
+	color: white;
+	font-weight: bold;
+	border: none;
+	box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4);
+}
+body.dark-mode .today {
+	background: linear-gradient(135deg, #2ecc71, #27ae60);
+	color: white;
+}
+
+/* Calendar container */
+.container {
+	max-width: 900px;
+}
+
+/* Event List */
+#eventList .list-group-item {
+	border-radius: 8px;
+	margin-bottom: 8px;
+	transition: background 0.2s ease;
+}
+#eventList .list-group-item:hover {
+	background: #f8f9fa;
+}
+body.dark-mode #eventList .list-group-item {
+	background: #1f1f2e;
+	color: #fff;
+	border: 1px solid #333;
+}
+body.dark-mode #eventList .list-group-item:hover {
+	background: #2a2a3d;
+}
+
+/* Header & buttons */
+h2 {
+	font-weight: 600;
+}
+.btn {
+	border-radius: 8px;
+}
+#darkModeBtn {
+	border-radius: 50%;
+	width: 42px;
+	height: 42px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18px;
+}
+
+/* Modal */
+.modal-content {
+	border-radius: 12px;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+body.dark-mode .modal-content {
+	background: #1e1e2f;
+	color: white;
+}
+/* Tombol Dark Mode Bulat */
+.dark-toggle {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	font-size: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, #0d6efd, #0aa1ff);
+	color: white;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+.dark-toggle:hover {
+	transform: scale(1.1);
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+}
+body.dark-mode .dark-toggle {
+	background: linear-gradient(135deg, #ffb703, #fb8500);
+	color: #222;
+}
+.footer {
+	background: #f8f9fa;
+	color: #333;
+	font-size: 14px;
+	border-top: 1px solid #ddd;
+}
+body.dark-mode .footer {
+	background: #1e1e1e;
+	color: #ddd;
+	border-top: 1px solid #444;
+}

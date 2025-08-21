@@ -1,0 +1,68 @@
++-----------------------+
+|   User (Browser)      |
+|   klik, input event   |
++----------+------------+
+           |
+           v
++-----------------------+
+|   JavaScript (Logic)  |
+| - Tampilkan kalender  |
+| - Tambah/Edit/Hapus   |
+| - Dark Mode toggle    |
++----------+------------+
+           |
+           v
++-----------------------+
+|  LocalStorage Browser |
+| - Simpan event        |
+| - Simpan dark mode    |
+| - Load saat refresh   |
++-----------------------+
+
+🔄 Penjelasan Flow
+
+## User berinteraksi
+- Navigasi bulan ← →
+- Klik tanggal → tambah/edit/hapus event
+- Klik tombol 🌙/☀️ untuk ganti mode
+
+## JavaScript (Logic)
+- Meng-handle UI kalender dengan Bootstrap grid
+- Mengelola event (create, update, delete)
+- Menyimpan semua perubahan ke localStorage
+
+## LocalStorage
+- Semua data event disimpan lokal di browser
+- Saat reload halaman, data langsung dimuat lagi
+- Tidak butuh koneksi internet/API
+
+## Kelebihan
+- Offline (jalan tanpa internet)
+- Cepat (langsung dari browser)
+- Mudah (cukup file HTML, CSS, JS)
+
+## Kekurangan
+- Data hanya ada di 1 browser (tidak sinkron antar perangkat)
+- Kalau localStorage dihapus → data hilang
+
+
+🛠️ Teknologi yang Digunakan
+
+## Frontend
+- HTML5 → Struktur utama halaman (calendar, modal event, tombol, footer).
+- CSS3 + Bootstrap 5 →
+- Bootstrap untuk grid layout (kalender 7 kolom × minggu).
+- Modal, tombol, card, dan responsif desain.
+- Styling tambahan (shadow efek timbul pada kalender).
+- Bootstrap Icons → Untuk ikon tombol navigasi bulan, dark mode (🌙/☀️).
+
+## JavaScript (Vanilla JS)
+- Date API (JavaScript built-in) → Menentukan tanggal, bulan, tahun, dan perhitungan kalender.
+- DOM Manipulation → Membuat elemen kalender dinamis (hari, event, dll).
+- Event Handling → Klik tombol, pilih tanggal, tambah/edit/hapus event.
+- Dark Mode Toggle → Mengubah tema dengan class .dark-mode.
+- LocalStorage (Web Storage API) → Menyimpan data event & preferensi dark mode agar tidak hilang setelah browser ditutup/reload.
+
+## Browser Built-in API
+- LocalStorage untuk persistence data.
+- Modal Bootstrap memanfaatkan JavaScript bawaan Bootstrap.
