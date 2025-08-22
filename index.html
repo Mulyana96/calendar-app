@@ -9,54 +9,144 @@
       rel="stylesheet"
     />
     <style>
+      /* ---- Base ---- */
+      :root {
+        --card-bg: #fff;
+        --card-border: #ddd;
+        --text-muted: #666;
+        --event-bg: #0d6efd;
+        --today-bg: #198754;
+        --today-text: #fff;
+        --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
       body {
         transition:
           background 0.5s ease,
           color 0.5s ease;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f6f7fb;
+        color: #111;
       }
       body.dark-mode {
-        background-color: #121212;
+        background: #121212;
         color: #f1f1f1;
+        --card-bg: #1e1e2f;
+        --card-border: #444;
+        --text-muted: #aaa;
+        --today-bg: #2ecc71;
+        --today-text: #000;
+        --shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
       }
 
-      /* Calendar Grid */
+      /* ---- Card ---- */
+      .calendar-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      .calendar-card:hover {
+        transform: translateY(-2px);
+      }
+
+      /* ---- Header ---- */
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      #monthYear {
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      @media (max-width: 576px) {
+        #monthYear {
+          font-size: 1.1rem;
+        }
+        .btn.btn-sm {
+          padding: 0.25rem 0.5rem;
+        }
+      }
+
+      /* ---- Dark mode toggle ---- */
+      #darkModeBtn {
+        border: none;
+        background: #0d6efd;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          background 0.3s ease;
+      }
+      #darkModeBtn:hover {
+        transform: rotate(18deg) scale(1.06);
+        background: #0b5ed7;
+      }
+
+      /* ---- Calendar Grid ---- */
       .calendar {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(7, minmax(44px, 1fr));
+        gap: 8px;
         margin-top: 20px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+      }
+      .calendar::-webkit-scrollbar {
+        height: 8px;
+      }
+      .calendar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+      }
+      body.dark-mode .calendar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
       }
 
       .day {
         padding: 12px;
-        min-height: 90px;
-        border: 1px solid #ddd;
-        text-align: center;
+        min-height: 88px;
+        border: 1px solid var(--card-border);
         border-radius: 12px;
-        background: #ffffff;
-        font-size: 14px;
+        background: var(--card-bg);
+        text-align: center;
         cursor: pointer;
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
+        font-size: 14px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
         align-items: center;
+        justify-content: flex-start;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          background 0.3s ease,
+          color 0.3s ease;
       }
-
       .day:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-      }
-
-      body.dark-mode .day {
-        background: #1e1e2f;
-        border: 1px solid #444;
+        transform: scale(1.03);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
       }
       body.dark-mode .day:hover {
-        background: #2a2a3d;
+        box-shadow: 0 6px 14px rgba(255, 255, 255, 0.12);
+      }
+
+      .day-name {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+        display: block;
+      }
+      .sunday {
+        color: #dc3545 !important;
       }
 
       /* Event badge */
@@ -64,129 +154,91 @@
         font-size: 11px;
         margin-top: 6px;
         padding: 2px 6px;
-        background: #0d6efd;
-        color: white;
-        border-radius: 5px;
-        text-overflow: ellipsis;
+        background: var(--event-bg);
+        color: #fff;
+        border-radius: 6px;
+        max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
-        max-width: 100%;
+        text-overflow: ellipsis;
       }
 
-      /* Today */
+      /* Today highlight */
       .today {
-        background-color: #198754 !important;
-        color: #fff !important;
-        font-weight: bold;
-        box-shadow: 0 0 10px rgba(25, 135, 84, 0.6);
+        background: var(--today-bg) !important;
+        color: var(--today-text) !important;
+        font-weight: 700;
+        box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25);
+        animation: pulse 1.5s infinite;
       }
-      body.dark-mode .today {
-        background-color: #2ecc71 !important;
-        color: black !important;
-      }
-
-      /* Efek timbul card */
-      .calendar-card {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        border-radius: 16px;
-        background: #ffffff;
-        padding: 20px;
-      }
-      .dark-mode .calendar-card {
-        background: #1e1e2f;
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.45);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+        }
       }
 
-      /* Day name */
-      .day-name {
-        font-size: 11px;
-        color: #666;
-        display: block;
-        margin-top: 2px;
-      }
-      body.dark-mode .day-name {
-        color: #aaa;
+      /* ---- Event list ---- */
+      #eventList .list-group-item {
+        background: var(--card-bg);
+        color: inherit;
+        border-color: var(--card-border);
       }
 
-      /* Sunday merah */
-      .sunday {
-        color: red !important;
+      /* ---- Modal ---- */
+      .modal-content {
+        background: var(--card-bg);
+        color: inherit;
+        border: 1px solid var(--card-border);
       }
 
-      /* Dark mode toggle button */
-      #darkModeBtn {
-        border: none;
-        background: #0d6efd;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 18px;
-        transition:
-          background 0.3s ease,
-          transform 0.2s ease;
-      }
-      #darkModeBtn:hover {
-        background: #0b5ed7;
-        transform: rotate(15deg) scale(1.1);
+      /* ---- Footer ---- */
+      .footer {
+        border-top: 1px solid var(--card-border);
+        background: var(--card-bg);
       }
 
-      /* Events list */
-      #eventList li {
-        font-size: 14px;
-      }
-
-      /* Footer */
-      footer {
-        background: #f8f9fa;
-        padding: 15px 0;
-        margin-top: 30px;
-        border-top: 1px solid #ddd;
-      }
-      body.dark-mode footer {
-        background: #1e1e2f;
-        border-color: #444;
-      }
-
-      /* Modal Dark Mode */
-      body.dark-mode .modal-content {
-        background: #2a2a3d;
-        color: #fff;
-      }
-      body.dark-mode .form-control {
-        background: #1e1e2f;
-        color: #fff;
-        border: 1px solid #555;
-      }
-
-      /* Responsive */
+      /* ---- Responsive ---- */
       @media (max-width: 768px) {
         .calendar {
-          grid-template-columns: repeat(2, 1fr);
+          gap: 6px;
         }
         .day {
-          min-height: 80px;
-          font-size: 12px;
+          min-height: 78px;
+          padding: 10px;
+          font-size: 13px;
         }
       }
       @media (max-width: 576px) {
         .calendar {
-          grid-template-columns: repeat(1, 1fr);
+          gap: 5px;
+        }
+        .day {
+          min-height: 70px;
+          padding: 8px;
+          font-size: 12px;
+        }
+        .day-name {
+          display: none;
         }
       }
     </style>
   </head>
   <body>
     <div class="container py-4">
-      <div class="calendar-card">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="calendar-card p-4">
+        <div class="calendar-header mb-3">
+          <!-- Tombol Dark Mode kiri -->
           <button id="darkModeBtn">🌙</button>
-          <div class="text-center">
-            <h2 id="monthYear" class="mb-0 text-primary"></h2>
-            <small id="realTimeDate" class="text-muted"></small>
-          </div>
-          <div>
+          <!-- Navigasi Bulan -->
+          <div class="d-flex align-items-center gap-2">
             <button id="prevBtn" class="btn btn-primary btn-sm">⟨</button>
+            <h2 id="monthYear" class="mb-0 text-primary"></h2>
             <button id="nextBtn" class="btn btn-primary btn-sm">⟩</button>
           </div>
         </div>
@@ -196,8 +248,8 @@
       </div>
 
       <!-- Events List -->
-      <div class="mt-4">
-        <h4 class="text-primary text-center mb-3">Events</h4>
+      <div class="mt-4 text-primary text-center">
+        <h4>Events</h4>
         <ul id="eventList" class="list-group"></ul>
       </div>
     </div>
@@ -233,12 +285,6 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center">
-      <p class="mb-0 text-primary">2025 Projects by <strong>Mulyana</strong></p>
-    </footer>
-
-    <!-- Bootstrap & Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       const calendarEl = document.getElementById("calendar");
@@ -248,7 +294,6 @@
       const eventModal = new bootstrap.Modal(
         document.getElementById("eventModal"),
       );
-      const realTimeDateEl = document.getElementById("realTimeDate");
 
       let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
       const today = new Date();
@@ -274,9 +319,8 @@
           " " +
           currentYear;
 
-        for (let i = 0; i < firstDay; i++) {
+        for (let i = 0; i < firstDay; i++)
           calendarEl.innerHTML += `<div></div>`;
-        }
 
         for (let day = 1; day <= daysInMonth; day++) {
           const dateObj = new Date(currentYear, currentMonth, day);
@@ -290,13 +334,15 @@
           dayEl.innerHTML = `<strong>${day}</strong><span class="day-name">${dayName}</span>`;
 
           if (dateObj.getDay() === 0) dayEl.classList.add("sunday");
+          const now = new Date();
           if (
-            day === today.getDate() &&
-            currentMonth === today.getMonth() &&
-            currentYear === today.getFullYear()
+            day === now.getDate() &&
+            currentMonth === now.getMonth() &&
+            currentYear === now.getFullYear()
           ) {
             dayEl.classList.add("today");
           }
+
           if (events[fullDate]) {
             events[fullDate].forEach((ev) => {
               const evEl = document.createElement("div");
@@ -305,6 +351,7 @@
               dayEl.appendChild(evEl);
             });
           }
+
           dayEl.addEventListener("click", () => openEventForm(fullDate));
           calendarEl.appendChild(dayEl);
         }
@@ -336,7 +383,7 @@
             li.className =
               "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `${date}: ${ev} 
-            <button class="btn btn-sm btn-danger">Delete</button>`;
+              <button class="btn btn-sm btn-danger">Delete</button>`;
             li.querySelector("button").addEventListener("click", () => {
               events[date] = events[date].filter((e) => e !== ev);
               if (events[date].length === 0) delete events[date];
@@ -348,16 +395,13 @@
         }
       }
 
-      // Dark mode toggle
-      const darkModeBtn = document.getElementById("darkModeBtn");
-      darkModeBtn.addEventListener("click", () => {
+      document.getElementById("darkModeBtn").addEventListener("click", () => {
         document.body.classList.toggle("dark-mode");
         darkModeBtn.textContent = document.body.classList.contains("dark-mode")
           ? "☀️"
           : "🌙";
       });
 
-      // Navigation
       document.getElementById("prevBtn").addEventListener("click", () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -366,7 +410,6 @@
         }
         renderCalendar();
       });
-
       document.getElementById("nextBtn").addEventListener("click", () => {
         currentMonth++;
         if (currentMonth > 11) {
@@ -376,23 +419,11 @@
         renderCalendar();
       });
 
-      // Realtime date
-      function updateRealTimeDate() {
-        const now = new Date();
-        realTimeDateEl.textContent = now.toLocaleString("id-ID", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-      }
-      setInterval(updateRealTimeDate, 1000);
-
       renderCalendar();
-      updateRealTimeDate();
     </script>
+
+    <footer class="footer mt-5 py-3 text-center">
+      <p class="mb-0 text-primary">2025 Projects by <strong>Mulyana</strong></p>
+    </footer>
   </body>
 </html>
