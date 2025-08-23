@@ -20,11 +20,11 @@
         --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       }
       body {
+        background: #f6f7fb;
+        color: #111;
         transition:
           background 0.5s ease,
           color 0.5s ease;
-        background: #f6f7fb;
-        color: #111;
       }
       body.dark-mode {
         background: #121212;
@@ -43,14 +43,7 @@
         border: 1px solid var(--card-border);
         border-radius: 16px;
         box-shadow: var(--shadow);
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease,
-          background 0.3s ease,
-          color 0.3s ease;
-      }
-      .calendar-card:hover {
-        transform: translateY(-2px);
+        transition: all 0.3s ease;
       }
 
       /* ---- Header ---- */
@@ -63,15 +56,6 @@
       }
       #monthYear {
         font-weight: 700;
-        letter-spacing: 0.3px;
-      }
-      @media (max-width: 576px) {
-        #monthYear {
-          font-size: 1.1rem;
-        }
-        .btn.btn-sm {
-          padding: 0.25rem 0.5rem;
-        }
       }
 
       /* ---- Dark mode toggle ---- */
@@ -97,24 +81,10 @@
         grid-template-columns: repeat(7, minmax(44px, 1fr));
         gap: 8px;
         margin-top: 20px;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        scrollbar-width: thin;
       }
-      .calendar::-webkit-scrollbar {
-        height: 8px;
-      }
-      .calendar::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 8px;
-      }
-      body.dark-mode .calendar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-      }
-
       .day {
-        padding: 12px;
-        min-height: 88px;
+        padding: 10px;
+        min-height: 100px;
         border: 1px solid var(--card-border);
         border-radius: 12px;
         background: var(--card-bg);
@@ -125,33 +95,26 @@
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        transition:
-          transform 0.15s ease,
-          box-shadow 0.15s ease,
-          background 0.3s ease,
-          color 0.3s ease;
+        transition: all 0.2s ease;
       }
-      .day:hover {
-        transform: scale(1.03);
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-      }
-      body.dark-mode .day:hover {
-        box-shadow: 0 6px 14px rgba(255, 255, 255, 0.12);
-      }
-
-      .day-name {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-top: 2px;
+      .day strong {
+        font-size: 1.2rem;
         display: block;
       }
-      .sunday {
+      .day-name {
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 4px;
+        color: var(--text-muted);
+      }
+      .sunday strong,
+      .sunday .day-name {
         color: #dc3545 !important;
       }
 
       /* Event badge */
       .event {
-        font-size: 11px;
+        font-size: 12px;
         margin-top: 6px;
         padding: 2px 6px;
         background: var(--event-bg);
@@ -183,35 +146,24 @@
         }
       }
 
-      /* ---- Event list ---- */
+      /* Event list */
       #eventList .list-group-item {
         background: var(--card-bg);
         color: inherit;
         border-color: var(--card-border);
       }
 
-      /* ---- Modal ---- */
-      .modal-content {
-        background: var(--card-bg);
-        color: inherit;
-        border: 1px solid var(--card-border);
-      }
-
-      /* ---- Footer ---- */
-      .footer {
-        border-top: 1px solid var(--card-border);
-        background: var(--card-bg);
-      }
-
       /* ---- Responsive ---- */
       @media (max-width: 768px) {
-        .calendar {
-          gap: 6px;
-        }
         .day {
-          min-height: 78px;
-          padding: 10px;
+          min-height: 90px;
           font-size: 13px;
+        }
+        .day strong {
+          font-size: 1rem;
+        }
+        .day-name {
+          font-size: 12px;
         }
       }
       @media (max-width: 576px) {
@@ -219,12 +171,14 @@
           gap: 5px;
         }
         .day {
-          min-height: 70px;
-          padding: 8px;
+          min-height: 80px;
           font-size: 12px;
         }
+        .day strong {
+          font-size: 0.9rem;
+        }
         .day-name {
-          display: none;
+          font-size: 11px;
         }
       }
     </style>
@@ -233,9 +187,7 @@
     <div class="container py-4">
       <div class="calendar-card p-4">
         <div class="calendar-header mb-3">
-          <!-- Tombol Dark Mode kiri -->
           <button id="darkModeBtn">🌙</button>
-          <!-- Navigasi Bulan -->
           <div class="d-flex align-items-center gap-2">
             <button id="prevBtn" class="btn btn-primary btn-sm">⟨</button>
             <h2 id="monthYear" class="mb-0 text-primary"></h2>
@@ -243,11 +195,9 @@
           </div>
         </div>
 
-        <!-- Calendar -->
         <div class="calendar" id="calendar"></div>
       </div>
 
-      <!-- Events List -->
       <div class="mt-4 text-primary text-center">
         <h4>Events</h4>
         <ul id="eventList" class="list-group"></ul>
@@ -382,8 +332,7 @@
             const li = document.createElement("li");
             li.className =
               "list-group-item d-flex justify-content-between align-items-center";
-            li.innerHTML = `${date}: ${ev} 
-              <button class="btn btn-sm btn-danger">Delete</button>`;
+            li.innerHTML = `${date}: ${ev} <button class="btn btn-sm btn-danger">Delete</button>`;
             li.querySelector("button").addEventListener("click", () => {
               events[date] = events[date].filter((e) => e !== ev);
               if (events[date].length === 0) delete events[date];
